@@ -354,7 +354,6 @@ AC_CONFIG_FILES([
     test/definitions/server/Makefile
     test/definitions/server/future/Makefile
     examples/Makefile
-examples/client/Makefile
     examples/executor/Makefile
     examples/executor/C++/Makefile
     examples/ordermatch/Makefile

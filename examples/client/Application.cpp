@@ -47,15 +47,35 @@ void Application::run() {
   while (true) {
     try {
       char action;
-      std::cout << std::endl 
-        << "q) Quit" << std::endl 
-        << std::endl 
-        << "Action: ";
+      std::cout << std::endl
+                << "x) Security List Request" << std::endl
+                << std::endl
+                << "q) Quit" << std::endl
+                << std::endl
+                << "Action: ";
       std::cin >> action;
 
-      if (action == 'q') break;
+      if (action == 'q')
+        break;
+      else if (action == 'x')
+        SecurityListRequest();
     } catch (std::exception &e) {
       std::cout << "Message Not Sent: " << e.what();
     }
   }
+}
+
+void Application::SetMessageHeader(FIX::Message &message) {
+  message.getHeader().setField((FIX::SenderCompID)getSetting("SenderCompID"));
+  message.getHeader().setField((FIX::TargetCompID)getSetting("TargetCompID"));
+}
+
+std::string Application::getSetting(const char *key, const char *defvalue) {
+  const FIX::Dictionary dic = m_settings.get();
+  if (dic.has(key)) return dic.getString(key);
+  return defvalue;
+}
+
+std::string Application::getCnt() { 
+  return std::to_string(++cnt); 
 }

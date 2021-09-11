@@ -1,6 +1,8 @@
 noinst_PROGRAMS = client
 
 client_SOURCES = \
+  x_SecurityListRequest.cpp \
+  y_SecurityList.cpp \
 	client.cpp \
 	Application.h \
 	Application.cpp

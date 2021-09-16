@@ -1,6 +1,8 @@
 noinst_PROGRAMS = client
 
 client_SOURCES = \
+  V_MarketDataRequest.cpp \
+	W_MarketDataIncrementalRefresh.cpp \
   x_SecurityListRequest.cpp \
   y_SecurityList.cpp \
 	client.cpp \

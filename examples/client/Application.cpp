@@ -1,5 +1,4 @@
 /* -*- C++ -*- */
-// Copyright 2021 Maplelinks,inc. All rights reserved.
 
 #include "Application.h"
 
@@ -49,6 +48,7 @@ void Application::run() {
       char action;
       std::cout << std::endl
                 << "x) Security List Request" << std::endl
+                << "V) Market Data Request" << std::endl
                 << std::endl
                 << "q) Quit" << std::endl
                 << std::endl
@@ -59,6 +59,8 @@ void Application::run() {
         break;
       else if (action == 'x')
         SecurityListRequest();
+      else if (action == 'V')
+        MarketDataRequest(getSetting("SYMBOL", "0"));
     } catch (std::exception &e) {
       std::cout << "Message Not Sent: " << e.what();
     }

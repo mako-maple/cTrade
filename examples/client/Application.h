@@ -14,10 +14,12 @@
 #include "quickfix/Values.h"
 
 // client -> server
+#include "quickfix/fix44/MarketDataRequest.h"    // < V >
 #include "quickfix/fix44/SecurityListRequest.h"  // < x >
 
 // server -> client
-#include "quickfix/fix44/SecurityList.h"  // < y >
+#include "quickfix/fix44/MarketDataSnapshotFullRefresh.h"  // < W >
+#include "quickfix/fix44/SecurityList.h"                   // < y >
 
 // const
 const char SessionTypeQUOTE[] = "QUOTE";
@@ -49,9 +51,11 @@ class Application : public FIX::Application, public FIX::MessageCracker {
 
   // client -> server
   /* x  */ void SecurityListRequest();
+  /* V  */ void MarketDataRequest(/* 55  symbol */ std::string);
 
   // server -> client
   /* y  */ void onMessage(const FIX44::SecurityList &, const FIX::SessionID &);
+  /* W  */ void onMessage(const FIX44::MarketDataSnapshotFullRefresh &, const FIX::SessionID &);
 
   // message tool
   void SetMessageHeader(FIX::Message &);

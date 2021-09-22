@@ -1,6 +1,10 @@
 noinst_PROGRAMS = client
 
 client_SOURCES = \
+  8_ExecutionReport.cpp \
+	D_NewOrderSingle.cpp \
+	AF_OrderMassStatusRequest.cpp \
+	F_OrderCancelRequest.cpp \
   V_MarketDataRequest.cpp \
 	W_MarketDataIncrementalRefresh.cpp \
   x_SecurityListRequest.cpp \

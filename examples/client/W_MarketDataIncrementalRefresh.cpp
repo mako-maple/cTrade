@@ -37,6 +37,8 @@ void Application::onMessage(const FIX44::MarketDataSnapshotFullRefresh &message,
 
   /* Show MarketData */
   std::cout 
+      << getUTCTimeStr() 
+      << "   " 
       << respDateTime 
       << "   " 
       << std::fixed << std::setprecision(SYMBOL_DIGIT) << std::setw(9) << std::right

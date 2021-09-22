@@ -60,6 +60,7 @@ void Application::onMessage(const FIX44::SecurityList &message, const FIX::Sessi
                 << "\tID: " << SYMBOL_ID << "\t " << SYMBOL_NAME << "  digit(" << SYMBOL_DIGIT << ")" << std::endl
                 << "\t*********************************************************************" << std::endl
                 << std::endl;
+      MarketDataRequest(SYMBOL_ID);
     }
   }
 }

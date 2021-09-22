@@ -12,6 +12,8 @@ void Application::OrderCancelRequest(/* 41   */ const std::string& orgID) {
   // -- send
   SetMessageHeader(message);
   FIX::Session::sendToTarget(message, SessionTypeTRADE);
+  std::cout << "--- < F > ---- OrderCancelRequest --------" << std::endl;
+  std::cout << "  ID " << orgID << std::endl;
 }
 
 /*

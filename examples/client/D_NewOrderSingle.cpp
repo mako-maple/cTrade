@@ -52,13 +52,14 @@ void Application::NewOrderSingle(
   FIX::Session::sendToTarget(message, SessionTypeTRADE);
 
   // log
+  std::cout << "--- < D > ---- NewOrderSingle --------" << std::endl;
   std::cout
-    << "Order : ID " << orderID
-    << "  SIDE " << ( side == FIX::Side_BUY ? "BUY" : "SELL" )
-    << "  TYPE " << ( type == FIX::OrdType_LIMIT ? "LIMIT" : "STOP" )
-    << "  QTY " << qty
-    << "  PX " << px 
-    << "  NEW " << newOrder
+    << "  ID " << orderID
+    << "  Side " << ( side == FIX::Side_BUY ? "BUY" : "SELL" )
+    << "  Type " << ( type == FIX::OrdType_LIMIT ? "LIMIT" : "STOP" )
+    << "  Qty " << qty
+    << "  Px " << px 
+    << "  New " << ( newOrder ? "True" : "False" )
     << std::endl;
 }
 

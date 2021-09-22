@@ -17,4 +17,7 @@ void Application::OrderMassStatusRequest() {
 
   SetMessageHeader(message);
   FIX::Session::sendToTarget(message, SessionTypeTRADE);
+
+  // log
+  std::cout << "--- < AF > ---- OrderMassStatusRequest --------" << std::endl;
 }

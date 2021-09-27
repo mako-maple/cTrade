@@ -65,7 +65,7 @@ void Application::onMessage(const FIX44::ExecutionReport& message, const FIX::Se
   else if (execType.getString() == "F" ) { ExecType = "Trade"; }
   else if (execType.getString() == "I" ) { ExecType = "Order Status"; }
 
-  // ExecType String
+  // OrderStatus String
   std::string OrderStatus = "Unknown";
   if      (ordStatus.getString() == "0" ) { OrderStatus = "New"; }
   else if (ordStatus.getString() == "1" ) { OrderStatus = "Partially filled"; }
@@ -104,7 +104,64 @@ void Application::onMessage(const FIX44::ExecutionReport& message, const FIX::Se
 
   // Order Status => Cancel Order
   if (execType.getString() == "I" /* FIX::ExecType_ORDER_STATUS */) {
+    ORDER_ID = "";
     OrderCancelRequest(clOrdID.getString());
+  }
+
+  // Trade なら
+  else if (execType.getString() == "F" /* FIX::ExecType_TRADE */) {
+    // Trade 新規決済 なら 決済注文（STOPも）
+    if (clOrdID.getString() == ORDER_ID) { 
+      // 確定px, posID保持
+      TRADE_PX = std::stod(avgPx.getString());
+      PositionID = posMaintRptID.getString();
+
+      // LIMIT ORDER
+      double pxx = (std::pow(0.1, SYMBOL_DIGIT) * RANGE);
+      NewOrderSingle(
+        /* 54   side   */ (side.getString() == "1" /* Side_BUY */ ? FIX::Side_SELL : FIX::Side_BUY),
+        /* 38   qty    */ std::stoi(lastQty.getString()),
+        /* 40   type   */ FIX::OrdType_LIMIT,
+        /* 44   px     */ TRADE_PX + (side.getString() == "1" /* Side_BUY */ ? pxx : -pxx),
+        /* NewOrder    */ PositionID
+      );
+      // STOP ORDER
+      pxx = (std::pow(0.1, SYMBOL_DIGIT) * STOP);
+      NewOrderSingle(
+        /* 54   side   */ (side.getString() == "1" /* Side_BUY */ ? FIX::Side_SELL : FIX::Side_BUY),
+        /* 38   qty    */ std::stoi(lastQty.getString()),
+        /* 40   type   */ FIX::OrdType_STOP,
+        /* 44   px     */ TRADE_PX - (side.getString() == "1" /* Side_BUY */ ? pxx : -pxx),
+        /* NewOrder    */ PositionID
+      );
+    }
+
+    // Trade 決済注文 なら
+    else {
+      std::cout 
+        << "－－決済－－ " 
+        << side 
+        << "(" 
+        << std::fixed << std::setprecision(SYMBOL_DIGIT) << std::setw(9)
+        << TRADE_PX 
+        << " - " 
+        << avgPx 
+        << ")" 
+        << std::endl;
+
+      if (side.getString() == "1" /* Side_BUY */) {
+        TRADE_PIP += (TRADE_PX - std::stod(avgPx.getString())) * std::pow(10.0, SYMBOL_DIGIT);
+      }
+      else {
+        TRADE_PIP += (std::stod(avgPx.getString()) - TRADE_PX) * std::pow(10.0, SYMBOL_DIGIT);
+      }
+      TRADE_PX = 0.0;
+      PositionID = "";
+      ORDER_ID = "";
+
+      // 残りは全部キャンセル
+      OrderMassStatusRequest();
+    }
   }
 }
 /* 150 ExecType

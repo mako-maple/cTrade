@@ -92,7 +92,7 @@
 /* #undef HAVE_PYTHON2 */
 
 /* Define if you have python3 */
-#define HAVE_PYTHON3 1
+/* #undef HAVE_PYTHON3 */
 
 /* Define if you have ruby */
 /* #undef HAVE_RUBY */

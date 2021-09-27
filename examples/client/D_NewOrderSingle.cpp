@@ -11,7 +11,8 @@ void Application::NewOrderSingle(
                                                        * OrdType_LIMIT = '2'
                                                        * OrdType_STOP = '3' */
     /* 44   */ const double& px = 0.0,
-    /* ---- */ const bool& newOrder = true) {
+    /* 721  */ const std::string& posID = "" /* New Order is NULL, Close Order is Set */
+) {
   FIX44::NewOrderSingle message;
 
   /* INIT */
@@ -37,14 +38,16 @@ void Application::NewOrderSingle(
   ** 新規注文時はリミットを３０秒にセット( TimeInForce_GOOD_TILL_DATE )
   ** 決済注文時はリミットなし( TimeInForce_GOOD_TILL_CANCEL )
   */
-  if (newOrder) {
-    // 30秒後にリミットをセット
+  if (posID == "") {
+    // 注文の有効期限をセット（デフォルト30秒後）
     time_t tim = time(NULL);
-    tim += 30;
+    tim += MAXSEC;
     /* 59  */ message.set(FIX::TimeInForce(FIX::TimeInForce_GOOD_TILL_DATE));
     /* 126 */ message.set(FIX::ExpireTime(FIX::UtcTimeStamp(tim, 0)));
+    ORDER_ID = orderID;
   } else {
     /* 59  */ message.set(FIX::TimeInForce(FIX::TimeInForce_GOOD_TILL_CANCEL));
+    /* 721 */ message.set(FIX::PosMaintRptID(posID));
   }
 
   // -- send
@@ -59,7 +62,7 @@ void Application::NewOrderSingle(
     << "  Type " << ( type == FIX::OrdType_LIMIT ? "LIMIT" : "STOP" )
     << "  Qty " << qty
     << "  Px " << px 
-    << "  New " << ( newOrder ? "True" : "False" )
+    << "  PosID " << posID
     << std::endl;
 }
 

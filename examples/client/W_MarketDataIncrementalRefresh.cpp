@@ -35,6 +35,21 @@ void Application::onMessage(const FIX44::MarketDataSnapshotFullRefresh &message,
     }
   }
 
+  /* 注文判定 */
+  if (ORDER_COUNT > 0) {
+    ORDER_COUNT--;
+    if (ORDER_COUNT == 0) {
+      TRADE_PX = (ORDER_SIDE == "1" ? /* BUY */ ask : /* SELL */ bid);
+      NewOrderSingle(
+        /*  54 */ *ORDER_SIDE.c_str(), 
+        /*  38 */ SIZE,
+        /*  40 */ FIX::OrdType_LIMIT,
+        /*  44 */ TRADE_PX,
+        /* 721 */ "" /* New Order */
+      );
+    }
+  }
+
   /* Show MarketData */
   std::cout 
       << getUTCTimeStr() 
@@ -49,7 +64,34 @@ void Application::onMessage(const FIX44::MarketDataSnapshotFullRefresh &message,
       << "   " 
       << std::setprecision(SYMBOL_DIGIT) << std::setw(9) << std::right 
       << ask 
-      << std::endl;
+      ;
+
+  // 注文カウント中はカウントを出力
+  if (ORDER_COUNT > 0) {
+    std::cout 
+      << "  ("
+      << ORDER_COUNT 
+      << ")  "
+      ;
+  }
+
+  // 注文確定後は差pipを出力
+  else if (TRADE_PX != 0.0) {
+    std::cout 
+      << "  : "
+      << std::setprecision(0) << std::setw(5) << std::right
+      << (ORDER_SIDE == "1" ? /* BUY  */ bid - TRADE_PX : /* SELL */ TRADE_PX - ask) * std::pow(10.0, SYMBOL_DIGIT)
+      << " "
+      << std::fixed << std::setprecision(SYMBOL_DIGIT) << std::setw(7) << std::right
+      << (ORDER_SIDE == "1" ? /* BUY  */ "∧" : /* SELL */ "∨")
+      << "  "
+      << TRADE_PX
+      ;
+  }
+  std::cout
+    << std::setprecision(0) << std::setw(5) << std::right
+    << " [" << TRADE_PIP << "]"
+    << std::endl;
 }
 
 /* :: FIX44-CSERVER.xml

@@ -43,6 +43,17 @@ class Application : public FIX::Application, public FIX::MessageCracker {
   int SYMBOL_DIGIT = 0;
   std::string SYMBOL_ID = "";
   std::string SYMBOL_NAME = "";
+  std::string ORDER_ID = "";
+  int ORDER_COUNT = 0;
+  int TRADE_PIP = 0;
+  std::string ORDER_SIDE = "";
+  std::string PositionID = "";
+  double TRADE_PX = 0.0;
+  long SIZE = 0;
+  int RANGE = 0;
+  int STOP = 0;
+  long MAXSEC = 0;
+  int SPREAD = 0;
 
   void onCreate(const FIX::SessionID &) {}
   void onLogon(const FIX::SessionID &sessionID);
@@ -57,11 +68,11 @@ class Application : public FIX::Application, public FIX::MessageCracker {
   // client -> server
   /* x  */ void SecurityListRequest();
   /* V  */ void MarketDataRequest(/* 55  symbol */ std::string);
-  /* D  */ void NewOrderSingle(/* 54 side  */ const char &,   /* Side_BUY = '1', Side_SELL = '2'; */
-                               /* 38 qty   */ const long &,
-                               /* 40 type  */ const char &,   /* OrdType_MARKET = '1';, OrdType_LIMIT = '2';, OrdType_STOP = '3'; */
-                               /* 44 px    */ const double &,
-                               /* newOrder */ const bool &    /* True 新規注文, False 決済注文 */
+  /* D  */ void NewOrderSingle(/*  54 side  */ const char &,   /* Side_BUY = '1', Side_SELL = '2'; */
+                               /*  38 qty   */ const long &,
+                               /*  40 type  */ const char &,   /* OrdType_MARKET = '1';, OrdType_LIMIT = '2';, OrdType_STOP = '3'; */
+                               /*  44 px    */ const double &,
+                               /* 721 PosId */ const std::string & /* New Order is NULL, Close Order is Set */
                               );
   /* AF */ void OrderMassStatusRequest();
   /* F  */ void OrderCancelRequest(/* 41   origOrdId  */ const std::string &);
@@ -76,6 +87,7 @@ class Application : public FIX::Application, public FIX::MessageCracker {
   std::string getSetting(const char *, const char *defvalue = "");
   std::string getCnt();
   std::string getUTCTimeStr();
+  void setNewOrder();
 };
 
 #endif  // EXAMPLES_CLIENT_APPLICATION_H_

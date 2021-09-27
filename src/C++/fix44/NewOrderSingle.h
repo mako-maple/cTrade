@@ -323,6 +323,7 @@ namespace FIX44
     FIELD_SET(*this, FIX::MoneyLaunderingStatus);
     FIELD_SET(*this, FIX::RegistID);
     FIELD_SET(*this, FIX::Designation);
+    FIELD_SET(*this, FIX::PosMaintRptID);  // spot
   };
 
 }

@@ -14,7 +14,15 @@ void Application::onLogon(const FIX::SessionID &sessionID) {
             << "QUALIFIER:" << sessionID.getSessionQualifier() << std::endl
             << std::endl;
   if (SessionTypeQUOTE == sessionID.getSessionQualifier()) {
+    SYMBOL_ID = getSetting("SYMBOL", "0");
     SecurityListRequest();
+  }
+  if (SessionTypeTRADE == sessionID.getSessionQualifier()) {
+    SIZE   = std::stol(getSetting("SIZE", "1000"));
+    RANGE  = std::stoi(getSetting("RANGE", "100"));
+    STOP   = std::stoi(getSetting("STOP",  "100"));
+    MAXSEC = std::stol(getSetting("MAXSEC", "30"));
+    SPREAD = std::stoi(getSetting("SPREAD",  "3"));
   }
 }
 
@@ -57,8 +65,7 @@ void Application::run() {
                 << "x) Security List Request" << std::endl
                 << "V) Market Data Request" << std::endl
                 << std::endl
-                << "1) New Order Buy" << std::endl
-                << "2) New Order Sell" << std::endl
+                << "d) New Order" << std::endl
                 << "A) Order List" << std::endl
                 << std::endl
                 << "q) Quit" << std::endl
@@ -72,20 +79,8 @@ void Application::run() {
         SecurityListRequest();
       else if (action == 'V')
         MarketDataRequest(getSetting("SYMBOL", "0"));
-      else if (action == '1') NewOrderSingle(
-                                  /* 54   side   */ FIX::Side_BUY,
-                                  /* 38   qty    */ 10000,
-                                  /* 40   type   */ FIX::OrdType_LIMIT,
-                                  /* 44   px     */ 100,
-                                  /* NewOrder    */ true
-                                );
-      else if (action == '2') NewOrderSingle(
-                                  /* 54   side   */ FIX::Side_SELL,
-                                  /* 38   qty    */ 10000,
-                                  /* 40   type   */ FIX::OrdType_LIMIT,
-                                  /* 44   px     */ 200,
-                                  /* NewOrder    */ true
-                                );
+      else if (action == 'd') 
+        setNewOrder();
       else if (action == 'A')
         OrderMassStatusRequest();
     } catch (std::exception &e) {
@@ -138,4 +133,28 @@ std::string Application::getUTCTimeStr() {
 
   // Result
   return output;
+}
+
+// New Order 準備
+void Application::setNewOrder() {
+  std::cout << "set New Order [" << ORDER_ID << "] [" << ORDER_COUNT << "] [" << ORDER_SIDE << "]" << std::endl;
+  // Order 可能？
+  if (ORDER_ID != "") return;
+
+  // Order 待ち状態？
+  if (ORDER_COUNT > 0) return; 
+
+  // ナノ秒取得
+  struct timespec ts;
+  clock_gettime(CLOCK_REALTIME, &ts);
+
+  // 待ち時間？待ちTick？を設定
+  ORDER_COUNT = ts.tv_nsec  / 100000000;
+
+  // 方向設定（買、売）
+  ORDER_SIDE = (ts.tv_nsec  / 1000000 % 2 == 0 ? "1" /* Side_BUY */ : "2" /* Side_SELL */);
+  std::cout << "set New Order [" << ORDER_ID << "] [" << ORDER_COUNT << "] [" << ORDER_SIDE << "]" << std::endl;
+
+  // 
+  return;
 }
